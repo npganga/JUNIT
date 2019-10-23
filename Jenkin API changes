@@ -1,0 +1,155 @@
+import hudson.model.Computer
+import hudson.slaves.SlaveComputer
+hudson.model.Node //Node
+
+run ='False'
+Nodes[];
+
+//Get all machines with Node as Regression or Smoke
+for (slave in jenkins.model.Jenkins.instance.slaves) {
+  MachineLabels = slave.getLabelString()
+    if (MachineLabels.contains('Regression')||MachineLabels.contains('Smoke')) {
+	Nodes<<slave.getNodeName()
+}
+
+}
+//run until any one of the slave machine is in online
+for(Nodes){
+If (!Nodes.isTemporarilyOffline()){
+  run= true;
+  if (run == 'true')
+  break;
+}
+
+if ( !Node.isTemporarilyOffline()){ 
+  
+
+
+//Get all the machine to check it execution time
+
+
+// Check the slave machine is in offline
+if ( !Machine.isTemporarilyOffline()){ 
+//Mark the selected machine to temporily offline
+      MoveNode =Machine.setTemporarilyOffline(true)
+}
+
+}
+
+
+
+for (slave in jenkins.model.Jenkins.instance.slaves) {
+    oldLabelName = slave.getLabelString()
+ 
+    if (oldLabelName.contains('WIN2012')) {
+ 
+        newLabelName = oldLabelName + " " + "WIN2012.X"
+        slave.setLabelString(newLabelName)
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////////////////////////
+import hudson.slaves.EnvironmentVariablesNodeProperty
+import jenkins.model.Jenkins
+
+instance = Jenkins.getInstance()
+globalNodeProperties = instance.getGlobalNodeProperties()
+envVarsNodePropertyList = globalNodeProperties.getAll(EnvironmentVariablesNodeProperty.class)
+
+newEnvVarsNodeProperty = null
+envVars = null
+previousCycle = null
+currentCycle = null
+envMap = null
+
+
+if ( envVarsNodePropertyList == null || envVarsNodePropertyList.size() == 0 ) {
+  newEnvVarsNodeProperty = new EnvironmentVariablesNodeProperty();
+  globalNodeProperties.add(newEnvVarsNodeProperty)
+  envVars = newEnvVarsNodeProperty.getEnvVars()
+} else {
+  envVars = envVarsNodePropertyList.get(0).getEnvVars()
+}
+
+previousCycle = envVars.get("CkCycle")
+println "Previous cycle : "+ previousCycle
+
+if (previousCycle == "Cycle1")
+	currentCycle = "Cycle2"
+else if (previousCycle == "Cycle2")
+	currentCycle = "Cycle3"
+else
+	currentCycle = "Cycle1"
+
+envVars.put("Cycle", currentCycle)
+println "Current cycle : "+ currentCycle
+
+if (currentCycle == "Cycle1") {
+	envMap = [ "CK_Group0" : "Windows7MS2010",
+        "CK_Group1" : "Windows8MS2007",
+	 "CK_Group2" : "Windows10MS2007",
+	 "CK_Group3" : "Windows8MS2010",
+	 "CK_Group4" : "Windows10MS2007",
+	 "CK_Group5" : "Windows7MS2007",
+	 "CK_Group6" : "Windows10MS2010",
+	 "CK_Group7" : "Windows7MS2007",
+	 "CK_Group8" : "Windows8MS2007"]
+}
+
+else if (currentCycle == "Cycle2") {
+	envMap = [ "CK_Group0" : "Windows8MS2010",
+        "CK_Group1" : "Windows10MS2007",
+	 "CK_Group2" : "Windows7MS2007",
+	 "CK_Group3" : "Windows10MS2010",
+	 "CK_Group4" : "Windows7MS2007",
+	 "CK_Group5" : "Windows8MS2007",
+	 "CK_Group6" : "Windows7MS2010",
+	 "CK_Group7" : "Windows8MS2007",
+	 "CK_Group8" : "Windows10MS2007" ]
+}
+
+else {
+	envMap = [ "CK_Group0" : "Windows10MS2010",
+        "CK_Group1" : "Windows7MS2007",
+	 "CK_Group2" : "Windows8MS2007",
+	 "CK_Group3" : "Windows7MS2010",
+	 "CK_Group4" : "Windows8MS2007",
+	 "CK_Group5" : "Windows10MS2007",
+	 "CK_Group6" : "Windows8MS2010",
+	 "CK_Group7" : "Windows10MS2007",
+	 "CK_Group8" : "Windows7MS2007" ]
+}
+
+println "CK Group 0 Plans will be triggered on : "+ envMap.get("CK_Group0")
+println "CK Group 1 Plans will be triggered on : "+ envMap.get("CK_Group1")
+println "CK Group 2 Plans will be triggered on : "+ envMap.get("CK_Group2")
+println "CK Group 3 Plans will be triggered on : "+ envMap.get("CK_Group3")
+println "CK Group 4 Plans will be triggered on : "+ envMap.get("CK_Group4")
+println "CK Group 5 Plans will be triggered on : "+ envMap.get("CK_Group5")
+println "CK Group 6 Plans will be triggered on : "+ envMap.get("CK_Group6")
+println "CK Group 7 Plans will be triggered on : "+ envMap.get("CK_Group7")
+println "CK Group 8 Plans will be triggered on : "+ envMap.get("CK_Group8")
+
+instance.save()
+
+return envMap
+
+///////////////////
+
+
+++++++++++++++++++++
+
