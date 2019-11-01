@@ -1,0 +1,146 @@
+import hudson.model.Computer
+import hudson.slaves.SlaveComputer
+import hudson.model.Slave
+import hudson.model.Node
+import hudson.model.Run
+
+//Variable Declaration
+
+slave = null;
+labelName = null;
+def MachineName = [];
+def c ;
+def vb;
+def g;
+def time = [];
+def head = [];
+def heat2= [];
+def activeMachineName = [];
+run = 0 ;
+execution =0;
+
+//Getting all Node with the Label 'Regression'
+
+for (slave in jenkins.model.Jenkins.instance.slaves) {
+    labelName = slave.getLabelString()
+    if (labelName.contains('Regression')) {
+        MachineName.add(slave.getNodeName());
+    }
+}
+
+//Getting current active Nodes
+
+for(i = 0 ; i < MachineName.size ; i++ ){
+  slave = Hudson.instance.slaves.find({it.name == MachineName[i]});
+   computer = slave.getComputer();
+    if (!computer.isOffline()) {
+		if(computer.isAcceptingTasks() && computer.countBusy()){
+			activeMachineName.add( MachineName[i]);
+			c=(computer.getBuilds())       
+			g=c[0];
+			currentJobName.add(g)
+			execution = 1; 
+        } 
+    }
+}
+
+//for( i = 0 ; i < activeMachineName.size ; i++ )
+//println(" "+currentJobName[i])
+
+//Getting start time of the currrent executiong job in each Node
+
+for(i=0;i<currentJobName.size;i++){ 
+ 
+  String a = currentJobName[i];
+  String[] str;
+  str = a.split('#');
+
+  def job = Jenkins.instance.getItem(str[0].trim())
+  def build = job.getBuildByNumber(str[1].trim().toInteger())
+  time.add(build.getStartTimeInMillis());
+}
+
+for(i=0;i<time.size;i++){ 
+  println(" "+time[i])
+}
+
+/////////
+if(execution!=0){
+for(i=0;i<activeMachineName.size;i++){
+ slave = Hudson.instance.slaves.find({it.name == activeMachineName[i]});
+   computer = slave.getComputer();
+    if (!computer.isOffline()) {
+     if(computer.isAcceptingTasks() && computer.countBusy()){
+      n=(computer.getBuilds())       
+       head1.add(c[0])
+       head2.add(c[1])
+       head3.add(c[2])
+       if(head1[i]==currentJobName[i])
+       {
+       }
+       if(head2[i]==currentJobName[i]){
+         	String b = head2[i];
+  			String[] str1;
+  			str1 = b.split('#');
+
+ 			def job = Jenkins.instance.getItem(str1[0].trim())
+  			def build = job.getBuildByNumber(str1[1].trim().toInteger())
+  			//println "getStartTimeInMillis: " + build.getStartTimeInMillis()
+  				time1.add(build.getStartTimeInMillis());
+            
+            String b1 = head2[i];
+  			String[] str11;
+  			str11 = b1.split('#');
+
+ 			def job = Jenkins.instance.getItem(str11[0].trim())
+  			def build = job.getBuildByNumber(str11[1].trim().toInteger())
+  			//println "getStartTimeInMillis: " + build.getStartTimeInMillis()
+  				time2.add(build.getStartTimeInMillis());
+            DifferenceJobTime=time2-time1
+         }
+		 if(head4[i]==currentJobName[i]){
+		     currentJobName[i]=head3;
+         }
+         if(head3[i]==currentJobName[i]){
+           
+         	String ab = head3[i];
+  			String[] strab;
+  			strab = ab.split('#');
+
+ 			def job = Jenkins.instance.getItem(strab[0].trim())
+  			def build = job.getBuildByNumber(strab[1].trim().toInteger())
+  				timeab.add(build.getStartTimeInMillis());
+            
+            String ab1 = head2[i];
+  			String[] strab1;
+  			strab1 = ab1.split('#');
+
+ 			def job = Jenkins.instance.getItem(strab1[0].trim())
+  			def build = job.getBuildByNumber(strab1[1].trim().toInteger())
+  				timeab1.add(build.getStartTimeInMillis());
+            DifferenceJobTime1=timeab1-timeab
+            
+            String ab2 = head1[i];
+  			String[] strab21;
+  			strab2 = ab2.split('#');
+
+ 			def job = Jenkins.instance.getItem(strab2[0].trim())
+  			def build = job.getBuildByNumber(strab2[1].trim().toInteger())
+  				timeab2.add(build.getStartTimeInMillis());
+            DifferenceJobTime2=timeab2-timeab1
+            
+           
+           if((DifferenceJobTime1+DifferenceJobTime2) < 300000){
+			 bslave = slave.find({it.name ==activeMachineName[i]});
+ 				computer = bslave.getComputer();
+				if ( !computer.isTemporarilyOffline()){ 
+    			MoveNode =computer.setTemporarilyOffline(true,null)
+			}
+           }  
+         }
+         
+     }
+    }
+             
+             
+             
