@@ -1,0 +1,51 @@
+Sub Insert_DesktopCompatibilityTestResults_Click()
+
+    Dim conna As New ADODB.Connection
+    Dim PassCount, FailCount, SkipCount, TotalCount  As Integer
+    Dim ReleaseVersion, MFilesServerVersion, MFilesClientVersion, DBType, Suite, Language, OSType, FeatureFlag, CIAgent, Category, Environment, ExecutionType As String
+    Dim ExecutionDate As Date
+    Dim ExecutionTime As Double
+
+    With Sheets("DesktopCompatibilityTestResults")
+            
+        'Open a connection to SQL Server
+        conna.Open "Provider=SQLOLEDB;Data Source=dashboard-testautomation.database.windows.net;Initial Catalog=dashboard-testautomation;Persist Security Info=True;User ID=dashboardDBAdmin;Password=ucBSVW9Faw;"
+        
+        'Skip the header row
+        iRowNo = 3
+            
+        'Loop until empty cell in CustomerId
+        Do Until .Cells(iRowNo, 1) = ""
+        ReleaseVersion = .Cells(iRowNo, 1)
+        MFilesServerVersion = .Cells(iRowNo, 2)
+        MFilesClientVersion = .Cells(iRowNo, 3)
+        DBType = .Cells(iRowNo, 4)
+        Suite = .Cells(iRowNo, 5)
+        Language = .Cells(iRowNo, 6)
+        OSType = .Cells(iRowNo, 7)
+        ExecutionDate = .Cells(iRowNo, 8)
+        FeatureFlag = .Cells(iRowNo, 9)
+        PassCount = .Cells(iRowNo, 10)
+        FailCount = .Cells(iRowNo, 11)
+        SkipCount = .Cells(iRowNo, 12)
+        TotalCount = .Cells(iRowNo, 13)
+        CIAgent = .Cells(iRowNo, 14)
+        Category = .Cells(iRowNo, 15)
+        ExecutionTime = .Cells(iRowNo, 16)
+        Environment = .Cells(iRowNo, 17)
+        ExecutionType = .Cells(iRowNo, 18)
+                
+        'Generate and execute sql statement to import the excel rows to SQL Server table
+        conna.Execute "insert into dbo.DesktopCompatibilityTestResults (ReleaseVersion, MFilesServerVersion, MFilesClientVersion, DBType, Suite, Language, OSType, ExecutionDate, FeatureFlag, PassCount, FailCount, SkipCount, TotalCount, CIAgent, Category, ExecutionTime, Environment, ExecutionType) values ('" & ReleaseVersion & "', '" & MFilesServerVersion & "', '" & MFilesClientVersion & "', '" & DBType & "', '" & Suite & "', '" & Language & "', '" & OSType & "', '" & ExecutionDate & "', '" & FeatureFlag & "', '" & PassCount & "', '" & FailCount & "', '" & SkipCount & "', '" & TotalCount & "', '" & CIAgent & "', '" & Category & "', '" & ExecutionTime & "', '" & Environment & "', '" & ExecutionType & "')"
+ 
+        iRowNo = iRowNo + 1
+        Loop
+            
+        MsgBox "dbo.DesktopCompatibilityTestResults imported." & (iRowNo - 3)
+            
+        conna.Close
+        Set conna = Nothing
+             
+    End With
+
+End Sub
